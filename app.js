@@ -48,7 +48,7 @@ app.patch('/api/v1/tours/:id', (req, res, next) => {
 
 // Route handler for GET single Tour   /api/v1/tours/:id
 app.delete('/api/v1/tours/:id', (req, res, next) => {
-  res.status(200).json({
+  res.status(204).json({
     status: 'success',
     message: 'Tour deleted successfully!',
     data: { tours: `<tour: ${req.params.id}>` },
