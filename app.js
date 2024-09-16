@@ -55,6 +55,15 @@ app.patch('/api/v1/tours/:id', (req, res, next) => {
   });
 });
 
+// Route handler for GET single Tour   /api/v1/tours/:id
+app.delete('/api/v1/tours/:id', (req, res, next) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Tour deleted successfully!',
+    data: { tours: `<tour: ${req.params.id}>` },
+  });
+});
+
 // Start the server on the specified port from environment variables or default to 5000
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
