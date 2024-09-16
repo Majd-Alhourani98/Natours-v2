@@ -10,7 +10,7 @@ dotenv.config();
 // Initialize an instance of an Express application
 const app = express();
 
-// Route handler for GET requests to /api/v1/tours
+// Route handler for GET All tours   /api/v1/tours
 app.get('/api/v1/tours', (req, res, next) => {
   res.status(200).json({
     status: 'success',
@@ -19,7 +19,7 @@ app.get('/api/v1/tours', (req, res, next) => {
   });
 });
 
-// Route handler for POST requests to /api/v1/tours
+// Route handler for POST new tour requests to /api/v1/tours
 app.post('/api/v1/tours', (req, res, next) => {
   res.status(201).json({
     status: 'success',
@@ -41,7 +41,16 @@ app.get('/api/v1/tours/:id', (req, res, next) => {
 app.get('/api/v1/tours/:id', (req, res, next) => {
   res.status(200).json({
     status: 'success',
-    message: 'Tour retrieved successfully!',
+    message: 'Tour retrived successfully!',
+    data: { tours: `<tour: ${req.params.id}>` },
+  });
+});
+
+// Route handler for update single Tour   /api/v1/tours/:id
+app.patch('/api/v1/tours/:id', (req, res, next) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Tour updated successfully!',
     data: { tours: `<tour: ${req.params.id}>` },
   });
 });
