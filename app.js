@@ -37,15 +37,6 @@ app.get('/api/v1/tours/:id', (req, res, next) => {
   });
 });
 
-// Route handler for GET requests to /api/v1/tours/:id
-app.get('/api/v1/tours/:id', (req, res, next) => {
-  res.status(200).json({
-    status: 'success',
-    message: 'Tour retrived successfully!',
-    data: { tours: `<tour: ${req.params.id}>` },
-  });
-});
-
 // Route handler for update single Tour   /api/v1/tours/:id
 app.patch('/api/v1/tours/:id', (req, res, next) => {
   res.status(200).json({
