@@ -1,5 +1,6 @@
 // Import the Express framework for building the server
 const express = require('express');
+const morgan = require('morgan');
 
 // Import dotenv to manage environment variables
 const dotenv = require('dotenv');
@@ -9,6 +10,9 @@ dotenv.config();
 
 // Initialize an instance of an Express application
 const app = express();
+
+// logging
+app.use(morgan('dev'));
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
