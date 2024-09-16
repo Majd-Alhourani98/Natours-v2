@@ -22,6 +22,7 @@ const getAllTours = (req, res) => {
   });
 };
 
+// create new tour handler
 const createTour = (req, res) => {
   res.status(201).json({
     status: 'success',
@@ -30,6 +31,7 @@ const createTour = (req, res) => {
   });
 };
 
+// get a single tour handler
 const getTour = (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -38,6 +40,7 @@ const getTour = (req, res) => {
   });
 };
 
+// update tour handler
 const updateTour = (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -46,6 +49,7 @@ const updateTour = (req, res) => {
   });
 };
 
+// delete tour handler
 const deleteTour = (req, res) => {
   res.status(204).json({
     status: 'success',
@@ -54,20 +58,13 @@ const deleteTour = (req, res) => {
   });
 };
 
-// Route handler to GET all tours
-app.get('/api/v1/tours', getAllTours);
-
-// Route handler for CREATE a new tour
-app.post('/api/v1/tours', createTour);
-
-// Route handler for GET single tour
-app.get('/api/v1/tours/:id', getTour);
-
-// Route handler for UPDATE a tour
-app.patch('/api/v1/tours/:id', updateTour);
-
-// Route handler for DELETE a tour
-app.delete('/api/v1/tours/:id', deleteTour);
+// Tour routes
+app.route('/api/v1/tours').get(getAllTours).post(createTour);
+app
+  .route('/api/v1/tours/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour);
 
 // Start the server on the specified port from environment variables or default to 5000
 const PORT = process.env.PORT || 5000;
