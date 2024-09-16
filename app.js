@@ -19,6 +19,15 @@ app.get('/api/v1/tours', (req, res, next) => {
   });
 });
 
+// Retrieve and send all tour data with a success message
+app.post('/api/v1/tours', (req, res, next) => {
+  res.status(201).json({
+    status: 'success',
+    message: 'New tour created successfully!',
+    data: { tours: '<new tours>' },
+  });
+});
+
 // Start the server on the specified port or default to 5000
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
