@@ -108,21 +108,19 @@ const deleteUser = (req, res) => {
   });
 };
 
-// Define routes for tours
-app.route('/api/v1/tours').get(getAllTours).post(createTour);
-app
-  .route('/api/v1/tours/:id')
-  .get(getTour)
-  .patch(updateTour)
-  .delete(deleteTour);
+const userRouter = express.Router();
+const tourRouter = express.Router();
+
+app.use('/api/v1/users', userRouter);
+app.use('/api/v1/tours', tourRouter);
 
 // Define routes for users
-app.route('/api/v1/users').get(getAllUsers).post(createUser);
-app
-  .route('/api/v1/users/:id')
-  .get(getUser)
-  .patch(updateUser)
-  .delete(deleteUser);
+userRouter.route('/').get(getAllUsers).post(createUser);
+userRouter.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
+
+// Define routes for users
+tourRouter.route('/').get(getAllTours).post(createTour);
+tourRouter.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
 
 // Start the server on the specified port from environment variables or default to 5000
 const PORT = process.env.PORT || 5000;
