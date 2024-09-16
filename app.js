@@ -1,16 +1,16 @@
-// Import Express
+// Import Express framework for building the server
 const express = require('express');
 
-// Import dotenv to load environment variables
+// Import dotenv to manage environment variables
 const dotenv = require('dotenv');
 
-// Load environment variables
+// Load environment variables from a .env file
 dotenv.config();
 
-// Initialize Express app
+// Initialize an instance of an Express application
 const app = express();
 
-// Retrieve and send all tour data with a success message
+// Route handler for GET requests to /api/v1/tours
 app.get('/api/v1/tours', (req, res, next) => {
   res.status(200).json({
     status: 'success',
@@ -19,7 +19,7 @@ app.get('/api/v1/tours', (req, res, next) => {
   });
 });
 
-// Retrieve and send all tour data with a success message
+// Route handler for POST requests to /api/v1/tours
 app.post('/api/v1/tours', (req, res, next) => {
   res.status(201).json({
     status: 'success',
@@ -28,7 +28,25 @@ app.post('/api/v1/tours', (req, res, next) => {
   });
 });
 
-// Start the server on the specified port or default to 5000
+// Route handler for GET requests to /api/v1/tours/:id
+app.get('/api/v1/tours/:id', (req, res, next) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Tour retrieved successfully!',
+    data: { tours: `<tour: ${req.params.id}>` },
+  });
+});
+
+// Route handler for GET requests to /api/v1/tours/:id
+app.get('/api/v1/tours/:id', (req, res, next) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Tour retrieved successfully!',
+    data: { tours: `<tour: ${req.params.id}>` },
+  });
+});
+
+// Start the server on the specified port from environment variables or default to 5000
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
