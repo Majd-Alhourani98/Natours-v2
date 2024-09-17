@@ -22,7 +22,7 @@ const getAllTours = async (req, res) => {
       const sortBy = req.query.sort.split(',').join(' ');
       query = query.sort(sortBy);
     } else {
-      query = query.sortBy('-createdAt');
+      // query = query.sort('-createdAt');
     }
 
     // Select
@@ -32,6 +32,15 @@ const getAllTours = async (req, res) => {
     } else {
       query = query.select('-__v');
     }
+
+    // Pagination
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 3;
+    const skip = (page - 1) * limit;
+
+    query = query.skip(skip).limit(limit);
+
+    // await Tour.countDocuments() // returns the number of documents
 
     // Execute the Query
     const tours = await query;
@@ -43,6 +52,7 @@ const getAllTours = async (req, res) => {
       data: { tours: tours },
     });
   } catch (err) {
+    console.log(err);
     res.status(400).json({
       status: 'fail',
       message: err.messge,
