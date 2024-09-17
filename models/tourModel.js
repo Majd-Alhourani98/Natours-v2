@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { select } = require('underscore');
 
 const tourSchema = new mongoose.Schema({
   name: {
@@ -61,6 +62,7 @@ const tourSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now(),
+    select: false,
   },
 
   startDates: [Date],
