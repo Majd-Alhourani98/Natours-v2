@@ -9,6 +9,7 @@ dotenv.config();
 
 // Database connection
 const DATABASE_LOCAL_URL = process.env.DATABASE_LOCAL_URL;
+
 mongoose
   .connect(DATABASE_LOCAL_URL)
   .then(conn => console.log('Database connection successful'))

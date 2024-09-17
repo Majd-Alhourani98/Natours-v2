@@ -1,3 +1,5 @@
+const Tour = require('./../models/tourModel');
+
 // Handler to get all tours
 const getAllTours = (req, res) => {
   res.status(200).json({
