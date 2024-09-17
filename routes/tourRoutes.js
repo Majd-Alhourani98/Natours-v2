@@ -4,7 +4,10 @@ const tourController = require('./../controllers/tourController');
 
 const router = express.Router();
 
-// Define routes for users
+router
+  .route('/top-rated-budget-tours')
+  .get(tourController.getTopRatedBudgetTours, tourController.getAllTours);
+
 router
   .route('/')
   .get(tourController.getAllTours)

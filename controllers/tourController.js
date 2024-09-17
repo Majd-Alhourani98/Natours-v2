@@ -145,12 +145,20 @@ const deleteTour = async (req, res) => {
   }
 };
 
+const getTopRatedBudgetTours = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.select = 'name,price,ratingsAverage,summary';
+  next();
+};
+
 module.exports = {
   getAllTours,
   createTour,
   getTour,
   updateTour,
   deleteTour,
+  getTopRatedBudgetTours,
 };
 
 // by default `findByIdAndUpdate` does not run the validators, and return the old document before updating
