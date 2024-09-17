@@ -10,12 +10,22 @@ const getAllTours = (req, res) => {
 };
 
 // Handler to create a new tour
-const createTour = (req, res) => {
-  res.status(201).json({
-    status: 'success',
-    message: 'New tour created successfully!',
-    data: { tour: '<new tour>' },
-  });
+const createTour = async (req, res) => {
+  try {
+    const tour = await Tour.create(req.body);
+    console.log(tour);
+    res.status(201).json({
+      status: 'success',
+      message: 'New tour created successfully!',
+      data: { tour: '<new tour>' },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err.messge,
+      error: err,
+    });
+  }
 };
 
 // Handler to get a single tour by ID
