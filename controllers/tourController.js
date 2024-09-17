@@ -83,12 +83,24 @@ const updateTour = async (req, res) => {
 };
 
 // Handler to delete a tour by ID
-const deleteTour = (req, res) => {
-  res.status(204).json({
-    status: 'success',
-    message: 'Tour deleted successfully!',
-    data: null, // No content to return for DELETE request
-  });
+const deleteTour = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const tour = await Tour.findByIdAndDelete(id);
+
+    res.status(204).json({
+      status: 'success',
+      message: 'Tour deleted successfully!',
+      data: null, // No content to return for DELETE request
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err.messge,
+      error: err,
+    });
+  }
 };
 
 module.exports = {
@@ -103,3 +115,5 @@ module.exports = {
 // to run the validator and get the tour document you should pass options object as a third paramters
 // inside this object set the new property to new to get the new document after update
 // and to run the valdiators set runValidators property to true to run the validator.
+
+// Model.prototype always means means an object created from a class
