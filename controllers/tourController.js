@@ -3,7 +3,23 @@ const Tour = require('./../models/tourModel');
 // Handler to get all tours
 const getAllTours = async (req, res) => {
   try {
-    const tours = await Tour.find();
+    // Filter
+    const queryObject = { ...req.query };
+    const excludedFields = ['sort', 'limit', 'page', 'select'];
+    excludedFields.forEach(field => delete queryObject[field]);
+
+    let queryString = JSON.stringify(queryObject);
+    queryString = queryString.replace(
+      /\b(gte|gt|lte|lt)\b/g,
+      match => `$${match}`
+    );
+    const filter = JSON.parse(queryString);
+
+    let query = Tour.find(filter);
+
+    // Execute the Query
+    const tours = await query;
+
     res.status(200).json({
       status: 'success',
       length: tours.length,
@@ -117,3 +133,10 @@ module.exports = {
 // and to run the valdiators set runValidators property to true to run the validator.
 
 // Model.prototype always means means an object created from a class
+
+// in mongoose there are 2 ways of writing database queries
+// - filter object
+// - mongoose methods: Tour.find().where('duration').equals(5).where('difficulty').equals('easy')
+// - lte, lt, gte, gt
+
+// .find return a query, and soon as we wait the query, the query will then exectue.
