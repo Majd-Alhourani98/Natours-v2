@@ -9,7 +9,8 @@ const userRouter = require('./routes/userRoutes');
 const app = express();
 
 // Set up morgan for logging HTTP requests
-app.use(morgan('dev'));
+
+if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
 // Serving static file
 app.use(express.static(path.join(__dirname, 'public')));

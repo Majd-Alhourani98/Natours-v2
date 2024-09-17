@@ -27,7 +27,7 @@ const createTour = async (req, res) => {
     res.status(201).json({
       status: 'success',
       message: 'New tour created successfully!',
-      data: { tour: '<new tour>' },
+      data: { tour: tour },
     });
   } catch (err) {
     res.status(400).json({
@@ -43,6 +43,7 @@ const getTour = async (req, res) => {
   try {
     const { id } = req.params;
     const tour = await Tour.findById(id);
+    //  Tour.findById(id) is a shorthand for: Tour.findOne({_id: req.params.id})
 
     res.status(201).json({
       status: 'success',
@@ -59,12 +60,26 @@ const getTour = async (req, res) => {
 };
 
 // Handler to update a tour by ID
-const updateTour = (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    message: 'Tour updated successfully!',
-    data: { tour: `<tour: ${req.params.id}>` },
-  });
+const updateTour = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const tour = await Tour.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Tour updated successfully!',
+      data: { tour: tour },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err.messge,
+      error: err,
+    });
+  }
 };
 
 // Handler to delete a tour by ID
@@ -83,3 +98,8 @@ module.exports = {
   updateTour,
   deleteTour,
 };
+
+// by default `findByIdAndUpdate` does not run the validators, and return the old document before updating
+// to run the validator and get the tour document you should pass options object as a third paramters
+// inside this object set the new property to new to get the new document after update
+// and to run the valdiators set runValidators property to true to run the validator.

@@ -1,11 +1,12 @@
 // Import dotenv to manage environment variables
 const dotenv = require('dotenv');
+dotenv.config();
+
 const mongoose = require('mongoose');
 
 const app = require('./app');
 
 // Load environment variables from a .env file
-dotenv.config();
 
 // Database connection
 const DATABASE_LOCAL_URL = process.env.DATABASE_LOCAL_URL;
