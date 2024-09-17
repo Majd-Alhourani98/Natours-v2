@@ -128,6 +128,55 @@ const getTopRatedBudgetTours = (req, res, next) => {
   next();
 };
 
+const getToursStats = async (req, res) => {
+  try {
+    // aggregation pipline is a mongodb feature
+    const stats = await Tour.aggregate([
+      {
+        $match: { ratingsAverage: { $gte: 4.5 } },
+      },
+
+      {
+        $group: {
+          // _id: null, // include all documents
+
+          _id: { $toUpper: '$difficulty' },
+
+          avgRating: { $avg: '$ratingsAverage' },
+          minRating: { $min: '$ratingsAverage' },
+          maxRating: { $max: '$ratingsAverage' },
+          numRatings: { $sum: '$ratingsAverage' },
+
+          numberOfDocuments: { $sum: 1 },
+
+          avgPrice: { $avg: '$price' },
+          minPrice: { $min: '$price' },
+          maxPrice: { $max: '$price' },
+        },
+      },
+
+      {
+        $sort: { avgPrice: -1 }, // 1
+      },
+
+      {
+        $match: { _id: { $ne: 'EASY' } },
+      },
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      data: { stats },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err.messge,
+      error: err,
+    });
+  }
+};
+
 module.exports = {
   getAllTours,
   createTour,
@@ -135,6 +184,7 @@ module.exports = {
   updateTour,
   deleteTour,
   getTopRatedBudgetTours,
+  getToursStats,
 };
 
 // by default `findByIdAndUpdate` does not run the validators, and return the old document before updating
