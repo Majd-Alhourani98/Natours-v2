@@ -68,6 +68,11 @@ const tourSchema = new mongoose.Schema({
   startDates: [Date],
 });
 
+// Virutal properties: works each time we get data from the database
+tourSchema.virtual('durationInWeeks').get(function () {
+  return this.duration / 7;
+});
+
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;
