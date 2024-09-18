@@ -1,16 +1,19 @@
+const AppError = require('../utils/AppError');
 const Tour = require('./../models/tourModel');
 const APIFeatures = require('./../utils/APIFeatures');
 
 const catchAsync = require('./../utils/catchAsync');
 
 // Handler to get all tours
-const getAllTours = catchAsync(async (req, res) => {
+const getAllTours = catchAsync(async (req, res, next) => {
+  // Praper the query
   const { query } = new APIFeatures(Tour, req.query)
     .filter()
     .select()
     .sort()
     .paginate();
 
+  // execute query
   const tours = await query;
 
   res.status(200).json({
@@ -22,7 +25,7 @@ const getAllTours = catchAsync(async (req, res) => {
 });
 
 // Handler to create a new tour
-const createTour = catchAsync(async (req, res) => {
+const createTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.create(req.body);
 
   res.status(201).json({
@@ -33,9 +36,13 @@ const createTour = catchAsync(async (req, res) => {
 });
 
 // Handler to get a single tour by ID
-const getTour = catchAsync(async (req, res) => {
+const getTour = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const tour = await Tour.findById(id);
+
+  if (!tour) {
+    return next(new AppError(`No tour found with that ID`, 404));
+  }
 
   res.status(201).json({
     status: 'success',
@@ -45,12 +52,16 @@ const getTour = catchAsync(async (req, res) => {
 });
 
 // Handler to update a tour by ID
-const updateTour = catchAsync(async (req, res) => {
+const updateTour = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const tour = await Tour.findByIdAndUpdate(id, req.body, {
     new: true,
     runValidators: true,
   });
+
+  if (!tour) {
+    return next(new AppError(`No tour found with that ID`, 404));
+  }
 
   res.status(200).json({
     status: 'success',
@@ -60,10 +71,14 @@ const updateTour = catchAsync(async (req, res) => {
 });
 
 // Handler to delete a tour by ID
-const deleteTour = catchAsync(async (req, res) => {
+const deleteTour = catchAsync(async (req, res, next) => {
   const { id } = req.params;
 
   const tour = await Tour.findByIdAndDelete(id);
+
+  if (!tour) {
+    return next(new AppError(`No tour found with that ID`, 404));
+  }
 
   res.status(204).json({
     status: 'success',
@@ -79,7 +94,8 @@ const getTopRatedBudgetTours = (req, res, next) => {
   next();
 };
 
-const getToursStats = catchAsync(async (req, res) => {
+// Alising
+const getToursStats = catchAsync(async (req, res, next) => {
   // aggregation pipline is a mongodb feature
   const stats = await Tour.aggregate([
     {
@@ -120,7 +136,7 @@ const getToursStats = catchAsync(async (req, res) => {
   });
 });
 
-const getMonthlyPlan = catchAsync(async (req, res) => {
+const getMonthlyPlan = catchAsync(async (req, res, next) => {
   const year = Number(req.params.year);
   const plan = await Tour.aggregate([
     {
