@@ -50,7 +50,23 @@ const tourSchema = new mongoose.Schema(
       required: [true, 'A tour must have a price'],
     },
 
-    priceDiscount: Number,
+    priceDiscount: {
+      type: Number,
+      validate: {
+        // custom validator: inside the validator function the `this` keyword is only going to point to the current document when we are creating a new dcoument, and so this function
+
+        // the price will be always undefined on update. so the value is always undefined.
+
+        // so the `this` inside the schema only take value on creation
+
+        validator: function (value) {
+          console.log(value, this.price);
+          return value < this.price;
+        },
+        // TO ACCESS TO THE CURRENT VALUE {VALUE}
+        message: 'Discount price `{VALUE}` should be below regular price',
+      },
+    },
 
     summary: {
       type: String,
@@ -98,7 +114,7 @@ tourSchema.virtual('durationInWeeks').get(function () {
   return this.duration / 7;
 });
 
-// Document middleware
+// Document middleware: works on .save() and .update()
 tourSchema.pre('save', function (next) {
   // this refers to current processing document
   this.slug = slugify(this.name, { lower: true });
