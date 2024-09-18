@@ -167,7 +167,7 @@ class APIFeatures {
     // Default to page 1 and 10 documents per page if not provided
     // Calculate the number of documents to skip and set the limit for pagination
     const currentPage = Number(this.requestQuery.page) || 1;
-    const pageSize = Number(this.requestQuery.limit) || 10;
+    const pageSize = Number(this.requestQuery.limit) || 100;
     const skipCount = (currentPage - 1) * pageSize;
     this.query = this.query.skip(skipCount).limit(pageSize);
 

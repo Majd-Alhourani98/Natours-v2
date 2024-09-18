@@ -69,27 +69,108 @@ const tourSchema = new mongoose.Schema(
     startDates: [Date],
 
     slug: String,
+
+    secretTour: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
-    // this will add id property to the document also
+    // this will add `id` property to the document also
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
+    id: false,
   }
 );
 
 // Virtual Properties
-// Virutal properties: works each time we get data from the database
 tourSchema.virtual('durationInWeeks').get(function () {
   return this.duration / 7;
 });
 
-// Document Middleware: runs before .save() and .create() not on insertMany
+// Document middleware
 tourSchema.pre('save', function (next) {
-  // this refers to current processing document and that is why we call it document middleware
+  // this refers to current processing document
   this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+// Query Middleware
+tourSchema.pre(/^find/, function (next) {
+  // this refers to the query
+  this.find({ secretTour: { $ne: true } });
+  next();
+});
+
+// Aggregation Middleware
+tourSchema.pre('aggregate', function (next) {
+  // this refres to the current aggregation
+  this._pipeline.unshift({
+    $match: { secretTour: { $ne: true } },
+  });
+
   next();
 });
 
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;
+
+// tourSchema.post('save', function (doc, next) {
+//   // doc, refers to saved document
+//   console.log('DOC 🔥', doc.constructor);
+//   // this also refer to the current document saved
+//   console.log('this 🔥', this.constructor);
+// });
+
+// we can have multiple middleware for the same hook
+
+// Document Middleware: runs before .save() and .create() not on insertMany
+
+// tourSchema.pre('save', function (next) {
+//   // this refers to current processing document and that is why we call it document middleware
+//   this.slug = slugify(this.name, { lower: true });
+//   next();
+// });
+
+// Query Middleware allows us to run functions before or after a certain query is executed
+// - inside the query middleware the this keyword point to current query
+
+// in mongoose we do not use arrow function becuase it does not have its own scope
+
+/*
+ this only works on .find() not on .findOne()
+tourSchema.pre('find', function (next) {
+  
+  next();
+}); */
+
+/*
+ this only works on findOne()
+tourSchema.pre('findOne', function (next) {
+  
+  next();
+}); */
+
+// to modify the query middleware to make it works on find and findOne. we use regex to match any query starts with find
+/*
+
+tourSchema.pre(/^find/, function (next) {
+  
+  next();
+}); */
+
+// when you a default value field in mongoose and this field does not exist in the document, mongoose will add it to the documents when we retirive those document with the default value
+
+// tourSchema.post(/^find/, function (docs, next) {
+//   console.log(docs); // all retrived documents
+//   console.log(this); // point to the query
+//   next();
+// });
+
+// tourSchema.post('aggregate', function (result, next) {
+//   console.log('aggregate');
+//   console.log(result); // return the result
+//   console.log(this);
+//   next();
+// });
