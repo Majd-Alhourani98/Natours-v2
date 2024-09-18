@@ -60,7 +60,6 @@ const tourSchema = new mongoose.Schema(
         // so the `this` inside the schema only take value on creation
 
         validator: function (value) {
-          console.log(value, this.price);
           return value < this.price;
         },
         // TO ACCESS TO THE CURRENT VALUE {VALUE}
