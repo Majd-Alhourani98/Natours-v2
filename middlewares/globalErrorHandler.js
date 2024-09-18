@@ -7,6 +7,9 @@ const handleDuplicateFieldsDB = err =>
   new AppError(`Duplicate field value: ${err.keyValue.name}. Please use another value`, 400);
 
 const handleValidatonErrorDB = err => {
+  // const errorsString = Object.values(err.errors).map(error => error.message);
+  // const message = `Invalid input data. ${errorsString.join('. ')}`;
+
   const errors = {};
   Object.keys(err.errors).forEach(error => {
     errors[error] = err.errors[error].message;
