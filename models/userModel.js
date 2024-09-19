@@ -64,6 +64,12 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
+  this.passwordChangedAt = Date.now();
+  return next();
+});
+
 userSchema.methods.isCorrectPassword = async function (plainPassword) {
   return await bcrypt.compare(plainPassword, this.password);
 };

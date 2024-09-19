@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+
 const jwt = require('jsonwebtoken');
 
 const User = require('./../models/userModel');
@@ -55,7 +57,7 @@ const forgotPassword = catchAsync(async (req, res, next) => {
 
   const user = await User.findOne({ email });
   if (!user) {
-    return next(new AppError('There is no use with email address.', 404));
+    return next(new AppError('There is no user with email address.', 404));
   }
 
   const resetToken = user.generatePasswordResetToken();
@@ -70,20 +72,49 @@ const forgotPassword = catchAsync(async (req, res, next) => {
       subject: 'Your password reset token (valid for 10 min)',
       message,
     });
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Token sent to email',
-    });
   } catch (err) {
     user.passwordResetToken = undefined;
     user.passwordResetTokenExpires = undefined;
     await user.save({ validateBeforeSave: false });
-
     return next(new AppError('There was an error sending the email. Try again later!', 500));
   }
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Token sent to email',
+  });
 });
 
-module.exports = { signup, login, forgotPassword };
+const resetPassword = catchAsync(async (req, res, next) => {
+  const { password, passwordConfirm } = req.body;
+
+  let { resetToken } = req.params;
+  resetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+  const user = await User.findOne({
+    passwordResetToken: resetToken,
+    passwordResetTokenExpires: { $gte: Date.now() },
+  });
+
+  if (!user) {
+    return next(new AppError('Token is invalid or has expired', 400));
+  }
+
+  user.password = password;
+  user.passwordConfirm = passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.passwordResetTokenExpires = undefined;
+  await user.save();
+
+  const token = signToken(user._id);
+
+  res.status(200).json({
+    status: 'success',
+    token: token,
+    message: 'passwords changed successfully',
+  });
+});
+
+module.exports = { signup, login, forgotPassword, resetPassword };
 
 // .save({ validateModifiedOnly: true })
