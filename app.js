@@ -8,6 +8,8 @@ const AppError = require('./utils/AppError');
 // Import route handlers for tours and users
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const authRouter = require('./routes/authRoutes');
+
 const globalErrorHandler = require('./middlewares/globalErrorHandler');
 
 // Initialize an instance of an Express application
@@ -25,6 +27,7 @@ app.use(express.json());
 // Mount Routers
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/auth', authRouter);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
