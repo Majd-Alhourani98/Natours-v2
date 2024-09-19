@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
+const { select } = require('underscore');
+const { use } = require('../routes/authRoutes');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -24,6 +26,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide a password'],
     minLength: [8, 'Please provide  a password'],
+    select: false,
   },
 
   passwordConfirm: {
@@ -46,6 +49,11 @@ userSchema.pre('save', async function (next) {
   this.passwordConfirm = undefined;
   next();
 });
+
+userSchema.methods.isCorrectPassword = async function (plainPassword) {
+  console.log(plainPassword, this.password);
+  return await bcrypt.compare(plainPassword, this.password);
+};
 
 const User = mongoose.model('User', userSchema);
 
