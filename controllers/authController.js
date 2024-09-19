@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
 
-const User = require('./../models/userModel');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
+const User = require('./../models/userModel');
 
 const signToken = id => {
   return jwt.sign({ id: id }, process.env.JWT_SECRET, {
@@ -11,8 +11,9 @@ const signToken = id => {
 };
 
 const signup = catchAsync(async (req, res, next) => {
-  const { name, email, password, passwordConfirm } = req.body;
-  const user = await User.create({ name, email, password, passwordConfirm });
+  // const { name, email, password, passwordConfirm } = req.body;
+  // const user = await User.create({ name, email, password, passwordConfirm });
+  const user = await User.create(req.body);
 
   const token = signToken(user._id);
 

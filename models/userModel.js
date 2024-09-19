@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
-const { select } = require('underscore');
-const { use } = require('../routes/authRoutes');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -41,6 +39,9 @@ const userSchema = new mongoose.Schema({
       message: 'Passwords are not the same',
     },
   },
+
+  // year-month-day
+  passwordChangedAt: Date,
 });
 
 userSchema.pre('save', async function (next) {
@@ -51,8 +52,16 @@ userSchema.pre('save', async function (next) {
 });
 
 userSchema.methods.isCorrectPassword = async function (plainPassword) {
-  console.log(plainPassword, this.password);
   return await bcrypt.compare(plainPassword, this.password);
+};
+
+userSchema.methods.isPasswordChangedAfter = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    return JWTTimestamp < parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+  }
+
+  // false means the password not changed
+  return false;
 };
 
 const User = mongoose.model('User', userSchema);
