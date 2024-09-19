@@ -13,7 +13,7 @@ router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);
 
 router
   .route('/')
-  .get(accessControl.protect, tourController.getAllTours)
+  .get(accessControl.protect, accessControl.restrictTo('admin'), tourController.getAllTours)
   .post(tourController.createTour);
 
 router
