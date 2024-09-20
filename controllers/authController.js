@@ -15,9 +15,9 @@ const signToken = id => {
 };
 
 const signup = catchAsync(async (req, res, next) => {
-  // const { name, email, password, passwordConfirm } = req.body;
-  // const user = await User.create({ name, email, password, passwordConfirm });
-  const user = await User.create(req.body);
+  const { name, email, password, passwordConfirm } = req.body;
+  const user = await User.create({ name, email, password, passwordConfirm });
+  // const user = await User.create(req.body);
 
   const token = signToken(user._id);
 
@@ -100,13 +100,13 @@ const resetPassword = catchAsync(async (req, res, next) => {
     return next(new AppError('Token is invalid or has expired', 400));
   }
 
+  const token = signToken(user._id);
+
   user.password = password;
   user.passwordConfirm = passwordConfirm;
   user.passwordResetToken = undefined;
   user.passwordResetTokenExpires = undefined;
   await user.save();
-
-  const token = signToken(user._id);
 
   res.status(200).json({
     status: 'success',
@@ -115,6 +115,74 @@ const resetPassword = catchAsync(async (req, res, next) => {
   });
 });
 
-module.exports = { signup, login, forgotPassword, resetPassword };
+const updatePassword = catchAsync(async (req, res, next) => {
+  const { currentPassword, password, passwordConfirm } = req.body;
+  const user = await User.findById(req.user._id).select('+password');
+
+  if (!(await user.isCorrectPassword(currentPassword))) {
+    return next(new AppError('Your current password is wrong!', 401));
+  }
+
+  user.password = password;
+  user.passwordConfirm = passwordConfirm;
+  await user.save();
+
+  const token = signToken(user._id);
+
+  res.status(200).json({
+    status: 'success',
+    message: 'password updated successfully',
+    token: token,
+    data: { user: user },
+  });
+});
+
+const filterBody = (data, ...allowedFields) => {
+  const obj = {};
+  Object.keys(data).forEach(el => {
+    if (allowedFields.includes(el)) obj[el] = data[el];
+  });
+  return obj;
+};
+
+const updateMe = catchAsync(async (req, res, next) => {
+  const { password, passwordConfirm } = req.body;
+  if (password || passwordConfirm) {
+    return next(
+      new AppError('This route is not for password updates, Please use /update-password', 400)
+    );
+  }
+
+  const filteredBody = filterBody(req.body, 'name', 'email');
+  const user = await User.findByIdAndUpdate(req.user._id, filteredBody, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'data updated successfully',
+    user: user,
+  });
+});
+
+const deleteMe = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user._id, { active: false });
+
+  res.status(204).json({
+    status: 'success',
+    message: 'user deleted successfully',
+  });
+});
+
+module.exports = {
+  signup,
+  login,
+  forgotPassword,
+  resetPassword,
+  updatePassword,
+  updateMe,
+  deleteMe,
+};
 
 // .save({ validateModifiedOnly: true })

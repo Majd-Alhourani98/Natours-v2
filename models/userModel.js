@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
+const { select } = require('underscore');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -55,6 +56,12 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetTokenExpires: Date,
+
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 userSchema.pre('save', async function (next) {
@@ -78,8 +85,6 @@ userSchema.methods.isPasswordChangedAfter = function (JWTTimestamp) {
   if (this.passwordChangedAt) {
     return JWTTimestamp < parseInt(this.passwordChangedAt.getTime() / 1000, 10);
   }
-
-  // false means the password not changed
   return false;
 };
 
