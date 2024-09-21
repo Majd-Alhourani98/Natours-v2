@@ -14,13 +14,24 @@ const signToken = id => {
   });
 };
 
+const setCookie = (res, token) => {
+  res.cookie('jwt', token, {
+    // the borwser will delete the cookie after is has expired
+    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+  });
+};
+
 const signup = catchAsync(async (req, res, next) => {
   const { name, email, password, passwordConfirm } = req.body;
   const user = await User.create({ name, email, password, passwordConfirm });
   // const user = await User.create(req.body);
 
   const token = signToken(user._id);
+  setCookie(res, token);
 
+  user.password = undefined;
   res.status(201).json({
     status: 'success',
     message: 'account created successfully',

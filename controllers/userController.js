@@ -1,11 +1,17 @@
+const User = require('./../models/userModel');
+const AppError = require('../utils/AppError');
+const catchAsync = require('../utils/catchAsync');
+
 // Handler to get all users
-const getAllUsers = (req, res) => {
+const getAllUsers = catchAsync(async (req, res) => {
+  const users = await User.find();
+
   res.status(200).json({
     status: 'success',
     message: 'Users retrieved successfully!',
-    data: { users: '<all users>' },
+    data: { users: users },
   });
-};
+});
 
 // Handler to create a new user
 const createUser = (req, res) => {
