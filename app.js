@@ -3,8 +3,11 @@ const path = require('path');
 
 const express = require('express');
 const morgan = require('morgan');
+
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 
 const AppError = require('./utils/AppError');
 
@@ -38,6 +41,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Middleware to parse JSON request body and make it available in req.body
 app.use(express.json({ limit: '10kb' }));
 
+// Data sanitization against NoSQL query injection
+app.use(mongoSanitize());
+
+// Date sanitization against XSS
+app.use(xss());
+
 // Mount Routers
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
@@ -52,3 +61,5 @@ app.use(globalErrorHandler);
 // Export the Express application instance
 // This allows the application to be imported and used in other modules (e.g., server.js)
 module.exports = app;
+
+// "email": {"$gte" : ""}
