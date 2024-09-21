@@ -1,7 +1,9 @@
 // Import necessary modules
 const path = require('path');
+
 const express = require('express');
 const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
 
 const AppError = require('./utils/AppError');
 
@@ -9,11 +11,18 @@ const AppError = require('./utils/AppError');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const authRouter = require('./routes/authRoutes');
-
 const globalErrorHandler = require('./middlewares/globalErrorHandler');
 
 // Initialize an instance of an Express application
 const app = express();
+
+const limiter = rateLimit({
+  max: 3,
+  windowMs: 60 * 60 * 1000,
+  message: 'Too many requests from this IP, please try again in an hour!',
+});
+
+app.use('/api', limiter);
 
 // Set up morgan for logging HTTP requests in development environment
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
