@@ -99,6 +99,38 @@ const tourSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+
+    startLocation: {
+      // GeoJSON
+      // type is requried field
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+
+      // coordinates is requried
+      coordinates: [Number],
+
+      // optional fields
+      address: String,
+      description: String,
+    },
+
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
   },
   {
     // this will add `id` property to the document also
@@ -140,3 +172,5 @@ tourSchema.pre('aggregate', function (next) {
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;
+
+// Geospatial data that describes places on earth using longitude and latitude coordinates

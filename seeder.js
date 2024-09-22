@@ -7,17 +7,14 @@ const dotenv = require('dotenv').config();
 const mongoose = require('mongoose');
 
 const tours = JSON.parse(
-  fs.readFileSync(
-    path.join(__dirname, 'dev-data', 'data', 'tours-simple.json'),
-    'utf-8'
-  )
+  fs.readFileSync(path.join(__dirname, 'dev-data', 'data', 'tours.json'), 'utf-8')
 );
 
 const DATABASE_LOCAL_URL = process.env.DATABASE_LOCAL_URL;
 mongoose
   .connect(DATABASE_LOCAL_URL)
-  .then(conn => console.log('Database connection successful'))
-  .catch(err => console.log('Failed to connect to the database 🔥', err));
+  .then(conn => console.log('Database connection successful ✅'))
+  .catch(err => console.log('Failed to connect to the database ❌', err));
 
 const importData = async () => {
   try {
