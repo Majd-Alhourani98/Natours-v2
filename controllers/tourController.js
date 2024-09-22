@@ -7,11 +7,7 @@ const catchAsync = require('./../utils/catchAsync');
 // Handler to get all tours
 const getAllTours = catchAsync(async (req, res, next) => {
   // Praper the query
-  const { query } = new APIFeatures(Tour, req.query)
-    .filter()
-    .select()
-    .sort()
-    .paginate();
+  const { query } = new APIFeatures(Tour, req.query).filter().select().sort().paginate();
 
   // execute query
   const tours = await query;
@@ -38,8 +34,14 @@ const createTour = catchAsync(async (req, res, next) => {
 // Handler to get a single tour by ID
 const getTour = catchAsync(async (req, res, next) => {
   const { id } = req.params;
-  const tour = await Tour.findById(id);
+  // using populate will still create a new query which may  affect the performance
+  // const tour = await Tour.findById(id).populate('guides');
+  // const tour = await Tour.findById(id).populate({
+  //   path: 'guides',
+  //   select: '-__v -passwordChangedAt',
+  // });
 
+  const tour = await Tour.findById(id);
   if (!tour) {
     return next(new AppError(`No tour found with that ID`, 404));
   }
